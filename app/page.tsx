@@ -1,23 +1,14 @@
-// app/posts/page.tsx
-import { posts } from "../lib/posts";
+import { Suspense } from "react";
 import PostsClient from "./posts-client";
-
-export const metadata = {
-  title: "Posts | Korean Blog",
-  description: "Korean Blog 글 목록",
-};
 
 export default function PostsPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Posts</h1>
-        <p className="mt-2 text-zinc-600">
-          글 목록입니다. 검색/태그/정렬로 빠르게 찾을 수 있어요.
-        </p>
-      </header>
+    <main className="mx-auto max-w-5xl px-6 py-10 bg-white">
+      <h1 className="text-3xl font-bold text-zinc-900">Posts</h1>
 
-      <PostsClient posts={posts} />
-    </div>
+      <Suspense fallback={<div className="mt-6 text-zinc-500">Loading...</div>}>
+        <PostsClient />
+      </Suspense>
+    </main>
   );
 }
