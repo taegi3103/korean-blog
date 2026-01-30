@@ -1,37 +1,23 @@
-import Link from "next/link";
-import { posts } from "./lib/posts";
+// app/posts/page.tsx
+import { posts } from "../lib/posts";
+import PostsClient from "./posts-client";
 
-export default function Home() {
-  const top = posts.slice(0, 3);
+export const metadata = {
+  title: "Posts | Korean Blog",
+  description: "Korean Blog 글 목록",
+};
 
+export default function PostsPage() {
   return (
-    <div className="space-y-8">
-      <section className="space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight">Korean Blog</h1>
-        <p className="text-zinc-600">
-          사이트 소개: Next.js(App Router) + GitHub Pages(Static Export)로 운영하는
-          한국어 블로그 템플릿입니다.
+    <div className="mx-auto w-full max-w-4xl px-6 py-10">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Posts</h1>
+        <p className="mt-2 text-zinc-600">
+          글 목록입니다. 검색/태그/정렬로 빠르게 찾을 수 있어요.
         </p>
-      </section>
+      </header>
 
-      <section className="space-y-4">
-        <div className="flex items-end justify-between">
-          <h2 className="text-xl font-semibold">최근 글</h2>
-          <Link href="/posts" className="text-sm text-zinc-700 hover:underline">
-            전체 보기 →
-          </Link>
-        </div>
-
-        <ul className="space-y-3">
-          {top.map((p) => (
-            <li key={p.slug} className="rounded-xl border border-zinc-200 p-5">
-              <div className="text-sm text-zinc-500">{p.date}</div>
-              <div className="mt-1 text-lg font-semibold">{p.title}</div>
-              <p className="mt-2 text-zinc-600">{p.excerpt}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <PostsClient posts={posts} />
     </div>
   );
 }
