@@ -1,75 +1,116 @@
-import Image from "next/image";
+import Link from "next/link";
 
-const basePath = process.env.NODE_ENV === "production" ? "/korean-blog" : "";
+type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  tags: string[];
+};
+
+const TEMP_POSTS: Post[] = [
+  {
+    slug: "welcome",
+    title: "환영합니다 — 첫 글",
+    excerpt: "GitHub Pages + Next.js static export로 블로그를 시작합니다.",
+    date: "2026-01-30",
+    tags: ["start", "github-pages", "nextjs"],
+  },
+  {
+    slug: "danang-notes",
+    title: "다낭에서 일하며 느낀 점",
+    excerpt: "현지에서 일/생활하며 얻은 작은 인사이트를 정리해요.",
+    date: "2026-01-29",
+    tags: ["life", "danang"],
+  },
+  {
+    slug: "automation-ideas",
+    title: "자동화 아이디어 5가지",
+    excerpt: "Make/n8n으로 블로그 운영을 자동화하는 실전 아이디어.",
+    date: "2026-01-28",
+    tags: ["automation", "n8n"],
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between bg-white px-16 py-32 dark:bg-black sm:items-start">
-        {/* Next.js logo (dark 모드에서만 invert) */}
-        <Image
-          className="dark:invert"
-          src={`${basePath}/next.svg`}
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
+    <div className="space-y-10">
+      {/* Hero */}
+      <section className="rounded-2xl border border-zinc-200 bg-white p-8">
+        <p className="text-sm font-medium text-zinc-600">korean-blog</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          여행·IT·자동화 노트
+        </h1>
+        <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-600">
+          GitHub Pages에서 동작하는 아주 단순한 블로그. 글은 가볍게, 구성은
+          미니멀하게. (지금은 임시 데이터로 글 목록만 보여줘요.)
+        </p>
 
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/posts"
+            className="inline-flex items-center justify-center rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+          >
+            글 목록 보기
+          </Link>
+          <Link
+            href="/about"
+            className="inline-flex items-center justify-center rounded-full border border-zinc-200 px-5 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50"
+          >
+            소개 보기
+          </Link>
+        </div>
+      </section>
 
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      {/* Posts Preview */}
+      <section className="space-y-4">
+        <div className="flex items-end justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">최근 글</h2>
+          <Link href="/posts" className="text-sm text-zinc-600 hover:text-zinc-900">
+            전체 보기 →
+          </Link>
         </div>
 
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          {/* Deploy Now */}
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black px-5 text-white transition-colors hover:bg-zinc-800 md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {/* vercel.svg는 검은 로고라서 버튼(검정) 위에서 안보임 → 항상 invert */}
-            <Image
-              className="invert"
-              src={`${basePath}/vercel.svg`}
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
+        <ul className="grid gap-4">
+          {TEMP_POSTS.map((post) => (
+            <li
+              key={post.slug}
+              className="rounded-2xl border border-zinc-200 bg-white p-6 hover:bg-zinc-50"
+            >
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span className="text-sm text-zinc-500">{post.date}</span>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs text-zinc-600"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-          {/* Documentation */}
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight">
+                {post.title}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-600">
+                {post.excerpt}
+              </p>
+
+              <div className="mt-4">
+                {/* 지금은 실제 글 페이지를 만들지 않았으니 Posts로 보내도 OK */}
+                <Link
+                  href="/posts"
+                  className="text-sm font-medium text-zinc-900 hover:underline"
+                >
+                  읽기 →
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }
