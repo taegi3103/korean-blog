@@ -37,6 +37,17 @@ jobs:
 
       - name: Build (Next export)
         run: npm run build
+     
+      - name: Debug exported files
+        run: |
+          echo "== out exists? =="
+          ls -la out || true
+          echo "== out/posts =="
+          ls -la out/posts || true
+          echo "== find post index.html =="
+          find out/posts -maxdepth 2 -name index.html -print || true
+          echo "== must exist (fail if missing) =="
+          test -f out/posts/hello-korean-blog/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
