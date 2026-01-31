@@ -2,7 +2,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
-type Post = {
+export type Post = {
+  tags?: string[];
   slug: string;
   title?: string;
   date?: string;

@@ -10,23 +10,23 @@ export default function PostsClient({ posts }: { posts: Post[] }) {
 
   const tags = useMemo(() => {
     const set = new Set<string>();
-    posts.forEach((p) => p.tags.forEach((t) => set.add(t)));
+    posts.forEach((p) => (p.tags ?? []).forEach((t) => set.add(t)));
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [posts]);
 
   const filtered = useMemo(() => {
     const query = q.trim().toLowerCase();
     return posts
-      .filter((p) => (tag ? p.tags.includes(tag) : true))
+      .filter((p) => (tag ? (p.tags ?? []).includes(tag) : true))
       .filter((p) => {
         if (!query) return true;
         return (
-          p.title.toLowerCase().includes(query) ||
-          p.excerpt.toLowerCase().includes(query) ||
-          p.tags.some((t) => t.toLowerCase().includes(query))
+          ((p.title ?? '').toLowerCase().includes(query)) ||
+          ((p.excerpt ?? '').toLowerCase().includes(query)) ||
+          ((p.tags ?? []).some((t) => t.toLowerCase().includes(query)))
         );
       })
-      .sort((a, b) => (a.date < b.date ? 1 : -1));
+      .sort((a, b) => ((a.date ?? '') < (b.date ?? '') ? 1 : -1));
   }, [posts, q, tag]);
 
   return (
@@ -84,7 +84,7 @@ export default function PostsClient({ posts }: { posts: Post[] }) {
                 <p className="mt-1 text-sm text-zinc-600">{p.excerpt}</p>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
+                  {p.tags?.map((t) => (
                     <button
                       key={t}
                       onClick={() => setTag(t)}
