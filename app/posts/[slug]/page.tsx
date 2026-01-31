@@ -1,23 +1,32 @@
+// app/posts/[slug]/page.tsx
 import { notFound } from "next/navigation";
-import { getPostBySlug, posts } from "@/app/lib/posts";
+import { getAllPosts, getPostBySlug } from "@/lib/posts"; // 네 프로젝트 함수명에 맞게 유지
+
+type Params = { slug: string | string[] };
+
+function normSlug(slug: Params["slug"]) {
+  return Array.isArray(slug) ? slug.join("/") : slug;
+}
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return posts.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  // ✅ 반드시 { slug: "hello-korean-blog" } 같은 "string"을 리턴해야 함
+  return getAllPosts().map((p) => ({ slug: p.slug }));
 }
 
-export default function PostPage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
-  if (!post) notFound();
+export default async function PostPage({ params }: { params: Params }) {
+  const slug = normSlug(params.slug);
 
+  const post = getPostBySlug(slug);
+  if (!post) return notFound();
+
+  // ↓ 아래 렌더링은 너 기존 코드 그대로 두고
+  // post 변수만 정상적으로 잡히게 하면 됨
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-10">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900">{post.title}</h1>
-      <p className="mt-2 text-sm text-zinc-500">{post.date}</p>
-      <div className="prose prose-zinc mt-8 max-w-none whitespace-pre-wrap">
-        {post.content}
-      </div>
-    </div>
+    <article>
+      <h1>{post.title}</h1>
+      {/* post.content 등 기존 렌더 */}
+    </article>
   );
 }
