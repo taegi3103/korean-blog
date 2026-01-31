@@ -110,12 +110,10 @@ jobs:
           find out/posts -maxdepth 3 -type f -name "index.html" -print || true
 
           echo "=== must-exist checks ==="
-          test -f "out/posts/hello-korean-blog/index.html"
-          test -f "out/posts/korea-it-history-notes/index.html"
-          test -f "out/posts/danang-travel-memo/index.html"
+          test -f "out/posts/hello-world/index.html"
+          test -f "out/posts/second-post/index.html"
 
-          echo "=== grep sanity (optional) ==="
-          grep -n "This page could not be found" out/posts/hello-korean-blog/index.html || true
+          echo "=== All required posts found! ==="
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
