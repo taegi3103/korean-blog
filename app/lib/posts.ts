@@ -1,4 +1,4 @@
-=// app/lib/posts.ts
+// app/lib/posts.ts
 import fs from "node:fs";
 import path from "node:path";
 
