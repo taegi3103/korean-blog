@@ -35,19 +35,87 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build (Next export)
-        run: npm run build
-     
-      - name: Debug exported files
+      # ✅ GitHub Pages 하위 경로(/korean-blog) 강제 주입
+      # next.config.* 이 이미 올바르면 이 주입이 있어도 대부분 안전함
+      - name: Ensure basePath/assetPrefix for GitHub Pages
+        shell: bash
         run: |
-          echo "== out exists? =="
+          set -e
+          node - <<'NODE'
+          const fs = require('fs');
+
+          // 프로젝트에 next.config.js 또는 next.config.mjs가 있다고 가정
+          // 없으면 생성 (js로)
+          const jsPath = 'next.config.js';
+          const mjsPath = 'next.config.mjs';
+
+          const inject = (path, isMjs) => {
+            let content = fs.readFileSync(path, 'utf8');
+
+            // 이미 basePath/assetPrefix 있으면 건드리지 않음
+            if (content.includes('basePath') || content.includes('assetPrefix')) {
+              console.log(`[skip] basePath/assetPrefix already present in ${path}`);
+              return;
+            }
+
+            // module.exports or export default 형태 둘 다 대충 커버
+            // 가장 단순하게: 마지막에 래핑해서 merge
+            if (isMjs) {
+              // export default {...}
+              if (content.includes('export default')) {
+                content = content.replace(/export\s+default\s+({[\s\S]*?});?\s*$/m, (m, obj) => {
+                  return `export default ({\n  ...${obj},\n  basePath: "/korean-blog",\n  assetPrefix: "/korean-blog/",\n});`;
+                });
+              } else {
+                // fallback
+                content += `\n\nexport default {\n  basePath: "/korean-blog",\n  assetPrefix: "/korean-blog/",\n};\n`;
+              }
+            } else {
+              // module.exports = {...}
+              if (content.includes('module.exports')) {
+                content = content.replace(/module\.exports\s*=\s*({[\s\S]*?});?\s*$/m, (m, obj) => {
+                  return `module.exports = ({\n  ...${obj},\n  basePath: "/korean-blog",\n  assetPrefix: "/korean-blog/",\n});`;
+                });
+              } else {
+                content += `\n\nmodule.exports = {\n  basePath: "/korean-blog",\n  assetPrefix: "/korean-blog/",\n};\n`;
+              }
+            }
+
+            fs.writeFileSync(path, content);
+            console.log(`[ok] injected basePath/assetPrefix into ${path}`);
+          };
+
+          if (fs.existsSync(mjsPath)) inject(mjsPath, true);
+          else if (fs.existsSync(jsPath)) inject(jsPath, false);
+          else {
+            fs.writeFileSync(jsPath, `module.exports = {\n  basePath: "/korean-blog",\n  assetPrefix: "/korean-blog/",\n};\n`);
+            console.log('[ok] created next.config.js with basePath/assetPrefix');
+          }
+          NODE
+
+      - name: Build (export to out/)
+        run: npm run build
+
+      # ✅ out/ 안에 posts가 실제 생성되는지 CI에서 바로 확인
+      - name: Debug exported files
+        shell: bash
+        run: |
+          set -e
+          echo "=== out exists? ==="
+          ls -la || true
           ls -la out || true
-          echo "== out/posts =="
+
+          echo "=== out/posts list ==="
           ls -la out/posts || true
-          echo "== find post index.html =="
-          find out/posts -maxdepth 2 -name index.html -print || true
-          echo "== must exist (fail if missing) =="
-          test -f out/posts/hello-korean-blog/index.html
+          find out/posts -maxdepth 3 -type f -name "index.html" -print || true
+
+          echo "=== must-exist checks ==="
+          test -f "out/posts/hello-korean-blog/index.html"
+          test -f "out/posts/korea-it-history-notes/index.html"
+          test -f "out/posts/danang-travel-memo/index.html"
+
+          echo "=== grep sanity (optional) ==="
+          grep -n "This page could not be found" out/posts/hello-korean-blog/index.html || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -60,3 +128,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
