@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { posts } from "./lib/posts";
+import { getAllPosts } from "./lib/getAllPosts()";
 
 export const metadata = {
   title: "Korean Blog",
@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default function Home() {
-  const latest = [...posts]
+  const latest = [...getAllPosts()]
     .sort((a, b) => (a.date < b.date ? 1 : -1))
     .slice(0, 3);
 
@@ -25,7 +25,7 @@ export default function Home() {
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-zinc-900">최근 글</h2>
-          <Link href="/posts" className="text-sm text-zinc-600 hover:text-zinc-900">
+          <Link href="/getAllPosts()" className="text-sm text-zinc-600 hover:text-zinc-900">
             전체 보기 →
           </Link>
         </div>
@@ -34,7 +34,7 @@ export default function Home() {
           {latest.map((p) => (
             <Link
               key={p.slug}
-              href={`/posts/${p.slug}`}
+              href={`/getAllPosts()/${p.slug}`}
               className="block rounded-2xl border border-zinc-200 bg-white p-5 hover:border-zinc-300"
             >
               <div className="text-sm text-zinc-500">{p.date}</div>

@@ -1,5 +1,5 @@
-import { posts } from "../lib/posts";
-import PostsClient from "./posts-client";
+import { getAllPosts } from "../lib/getAllPosts()";
+import PostsClient from "./getAllPosts()-client";
 
 export const metadata = {
   title: "Posts | Korean Blog",
@@ -16,7 +16,7 @@ export default function PostsPage() {
         </p>
       </header>
 
-      <PostsClient posts={posts} />
+      <PostsClient getAllPosts()={getAllPosts()} />
     </div>
   );
 }
