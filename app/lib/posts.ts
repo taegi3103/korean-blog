@@ -11,7 +11,7 @@ export type Post = {
   content: string;
 };
 
-const POSTS_DIR = path.join(process.cwd(), "posts"); // ✅ repo 루트의 /posts 폴더
+const POSTS_DIR = path.join(process.cwd(), "_posts");
 
 const norm = (s: string) =>
   s
